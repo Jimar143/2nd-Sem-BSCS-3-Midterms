@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midterms Quiz Reviewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-900">
+
+    <!-- Navigation Header -->
+    <nav class="bg-white border-b border-slate-200">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="bg-blue-600 p-2 rounded-lg text-white">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tight">StudyHub</span>
+            </div>
+            <div class="text-sm font-medium text-slate-500">2026 2nd Sem Midterms</div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-12">
+        <!-- Hero Section -->
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight">
+                Midterms Quiz Reviewer
+            </h1>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                Select a subject below to begin your study session. Each module contains specific questions for the midterm exams.
+            </p>
+        </header>
+
+        <!-- Subjects Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <!-- Prolance -->
+            <div class="bg-white p-8 rounded-2xl border border-slate-200 card-hover flex flex-col justify-between">
+                <div>
+                    <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-6">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-3">Prolance</h2>
+                    <p class="text-slate-500 mb-8 leading-relaxed">
+                        Professional Elective covering modern software tools, professional workflows, and industry standards.
+                    </p>
+                </div>
+                <a href="Prolance.html" class="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-center transition-colors flex items-center justify-center gap-2">
+                    Open Quiz Reviewer <i class="fas fa-arrow-right text-sm"></i>
+                </a>
+            </div>
+
+            <!-- Comporg -->
+            <div class="bg-white p-8 rounded-2xl border border-slate-200 card-hover flex flex-col justify-between">
+                <div>
+                    <div class="w-14 h-14 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-2xl mb-6">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-3">Comporg</h2>
+                    <p class="text-slate-500 mb-8 leading-relaxed">
+                        Computer Organization and Architecture. Hardware logic, CPU cycles, and memory management.
+                    </p>
+                </div>
+                <a href="CompOrg.html" class="w-full py-4 px-6 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-center transition-colors flex items-center justify-center gap-2">
+                    Open Quiz Reviewer <i class="fas fa-arrow-right text-sm"></i>
+                </a>
+            </div>
+
+            <!-- Softwen -->
+            <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200 border-dashed opacity-70">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="w-14 h-14 bg-slate-200 text-slate-500 rounded-xl flex items-center justify-center text-2xl">
+                        <i class="fas fa-diagram-project"></i>
+                    </div>
+                    <span class="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full uppercase">Pending</span>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-400 mb-3">Softwen</h2>
+                <p class="text-slate-400 mb-8 leading-relaxed">
+                    Software Engineering methodologies, lifecycle models, and system design principles.
+                </p>
+                <div class="w-full py-4 px-6 bg-slate-200 text-slate-500 font-bold rounded-xl text-center cursor-not-allowed">
+                    Coming Soon
+                </div>
+            </div>
+
+            <!-- Advance Web Prog -->
+            <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200 border-dashed opacity-70">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="w-14 h-14 bg-slate-200 text-slate-500 rounded-xl flex items-center justify-center text-2xl">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <span class="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full uppercase">Pending</span>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-400 mb-3">Advance Web Prog</h2>
+                <p class="text-slate-400 mb-8 leading-relaxed">
+                    Advanced Web Programming with frameworks, server-side development, and modern UI architectures.
+                </p>
+                <div class="w-full py-4 px-6 bg-slate-200 text-slate-500 font-bold rounded-xl text-center cursor-not-allowed">
+                    Coming Soon
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="py-12 border-t border-slate-200 mt-12 text-center text-slate-400 text-sm">
+        <p>Midterms Quiz Reviewer for BSCS 3</p>
+    </footer>
+
+</body>
+</html>
