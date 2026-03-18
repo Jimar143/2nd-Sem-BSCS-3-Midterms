@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Softwen Reviewer - Database Design & SDLC Approaches</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .option-btn:disabled { cursor: not-allowed; }
+        .correct { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #166534 !important; }
+        .wrong { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
+        .explanation-box { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center py-10 px-4">
+
+    <div class="max-w-2xl w-full mb-8 text-center">
+        <h1 class="text-3xl font-extrabold text-slate-800 mb-2">Softwen Reviewer Quiz</h1>
+        <p class="text-slate-500">Database Design, Administration, and SDLC Approaches</p>
+    </div>
+
+    <div id="quiz-card" class="max-w-2xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+        <div class="w-full bg-slate-100 h-2">
+            <div id="progress-bar" class="bg-indigo-600 h-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+
+        <div class="p-8">
+            <div class="flex justify-between items-center mb-6">
+                <span id="topic-tag" class="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full uppercase tracking-wider">Topic</span>
+                <span id="question-number" class="text-slate-400 text-sm font-medium">Question 1/35</span>
+            </div>
+
+            <h2 id="question-text" class="text-xl font-bold text-slate-800 mb-8 leading-tight">Loading question...</h2>
+
+            <div id="options-container" class="grid grid-cols-1 gap-3 mb-6">
+                <!-- Options injected here -->
+            </div>
+
+            <div id="explanation-container" class="hidden mb-6 p-4 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg explanation-box">
+                <p class="text-sm font-bold text-amber-800 mb-1">Wait, why?</p>
+                <p id="explanation-text" class="text-sm text-amber-900 leading-relaxed"></p>
+            </div>
+
+            <div id="action-area" class="hidden flex justify-end">
+                <button id="next-btn" class="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 flex items-center gap-2">
+                    Next Question 
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="results-card" class="hidden max-w-2xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 p-10 text-center">
+        <div class="mb-6 flex justify-center">
+            <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+        </div>
+        <h2 class="text-3xl font-black text-slate-800 mb-2">Quiz Finished!</h2>
+        <p class="text-slate-500 mb-8">You've successfully completed the IT2038 Reviewer.</p>
+        <div class="text-6xl font-black text-indigo-600 mb-2" id="final-score">0 / 35</div>
+        <div class="text-sm text-slate-400 mb-10" id="percentage">0%</div>
+        <button onclick="location.reload()" class="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all flex items-center justify-center gap-2">
+            Restart Review
+        </button>
+    </div>
+
+    <script>
+        const rawQuestions = [
+            // Database Design (Handout 3)
+            { question: "What is an integrated collection of stored data that is centrally managed and controlled?", options: ["Schema", "DBMS", "Database", "Application domain data"], answer: "Database", topic: "Database Design", explanation: "A database (DB) is defined as an integrated collection of stored data that is centrally managed and controlled." },
+            { question: "Which system software component is generally purchased separately from the OS to manage the database?", options: ["Compiler", "DBMS", "API Processor", "SQL Direct"], answer: "DBMS", topic: "Database Design", explanation: "A Database Management System (DBMS) is a system software component used to manage and control the database." },
+            { question: "The database data consists of application domain data and the ______.", options: ["Transaction log", "Metadata", "Schema", "Admin interface"], answer: "Schema", topic: "Database Design", explanation: "The database data consists of two stores: application domain data (actual data) and the schema (descriptive information)." },
+            { question: "Schema data is often referred to as ______.", options: ["Master data", "Metadata", "Primary data", "Integrated data"], answer: "Metadata", topic: "Database Design", explanation: "Metadata is 'data about the data', providing the structure and rules for accessing the application domain data." },
+            { question: "Who has primary responsibility for the structure and integrity of the data itself?", options: ["Database Administrator", "Data Administrator", "System Analyst", "Project Manager"], answer: "Data Administrator", topic: "Database Roles", explanation: "A Data Administrator (DA) focuses on data definition, standards, quality, and ownership." },
+            { question: "The Database Administrator (DBA) is primarily responsible for ______.", options: ["Defining business logic", "Naming standards", "Performance and safety", "Data ownership"], answer: "Performance and safety", topic: "Database Roles", explanation: "A DBA maintains the database after deployment, focusing on environment configuration, security, performance, and recovery." },
+            { question: "What is a two-dimensional structure composed of rows and columns in an RDBMS?", options: ["Tuple", "Relation/Table", "Schema", "Attribute"], answer: "Relation/Table", topic: "Relational DB", explanation: "A relational database management system (RDBMS) organizes stored data into structures called tables or relations." },
+            { question: "In a table, what does a row (tuple) represent?", options: ["A single data item", "A data category", "A relationship", "The schema"], answer: "A single data item", topic: "Relational DB", explanation: "Each table row (tuple) represents data about a specific entity or class." },
+            { question: "An attribute is represented in a table as a ______.", options: ["Row", "Column", "Value", "Key"], answer: "Column", topic: "Relational DB", explanation: "Each table column represents an attribute, and each column has a distinct name." },
+            { question: "Which key type uniquely identifies any row but may contain unnecessary attributes?", options: ["Primary Key", "Candidate Key", "Superkey", "Foreign Key"], answer: "Superkey", topic: "Keys", explanation: "A Superkey is an attribute or combination of attributes that uniquely identifies any row in the table." },
+            { question: "A Candidate Key is defined as a superkey without any ______.", options: ["Primary values", "Null entries", "Unnecessary attributes", "Foreign references"], answer: "Unnecessary attributes", topic: "Keys", explanation: "A Candidate Key is a superkey that contains no extra attributes beyond what is needed for identification." },
+            { question: "Which key is selected to uniquely identify all other values in a row and cannot contain null entries?", options: ["Foreign Key", "Secondary Key", "Superkey", "Primary Key"], answer: "Primary Key", topic: "Keys", explanation: "A Primary Key is the chosen candidate key for unique identification; it must never be null." },
+            { question: "A Foreign Key in one table must match the ______ of another table.", options: ["Candidate Key", "Primary Key", "Superkey", "Secondary Key"], answer: "Primary Key", topic: "Keys", explanation: "A Foreign Key is an attribute in one table whose values must match the primary key in another table (or be null)." },
+            { question: "Which key type is used strictly for data retrieval purposes?", options: ["Candidate Key", "Secondary Key", "Superkey", "Foreign Key"], answer: "Secondary Key", topic: "Keys", explanation: "Secondary keys are used for search and retrieval but don't necessarily provide unique identification." },
+            { question: "A technique that updates the database with audit information like User ID and time is ______.", options: ["Transaction logging", "Database locking", "Data indexing", "Schema binding"], answer: "Transaction logging", topic: "Protection", explanation: "Transaction logging helps discourage fraud and provides a recovery mechanism for erroneous transactions." },
+            { question: "A portion of the database is made unavailable to other users during a ______.", options: ["Backup", "Transaction log", "Database lock", "Schema update"], answer: "Database lock", topic: "Protection", explanation: "A database lock is a technique where a portion of the database is locked by one user so others cannot interfere with it." },
+            { question: "Which lock type allows multiple users to read but not update data?", options: ["Exclusive lock", "Shared lock", "Write lock", "Primary lock"], answer: "Shared lock", topic: "Protection", explanation: "A shared lock (read lock) allows others to read the same data but prevents updates." },
+            { question: "An exclusive lock (write lock) prevents other users from ______.", options: ["Writing only", "Reading only", "Both reading and writing", "Accessing the schema"], answer: "Both reading and writing", topic: "Protection", explanation: "With an exclusive lock, no other user can even read the data until the lock is released." },
+            
+            // SDLC Approaches (Handout 4)
+            { question: "What approach to SDLC is used when requirements are well understood and technical risk is low?", options: ["Adaptive", "Iterative", "Predictive", "Agile"], answer: "Predictive", topic: "SDLC Approaches", explanation: "A predictive approach assumes the development project can be planned and organized because requirements are well defined." },
+            { question: "An adaptive approach to SDLC is used when ______.", options: ["Technical risk is low", "Requirements are uncertain", "Project is small", "Staff is experienced"], answer: "Requirements are uncertain", topic: "SDLC Approaches", explanation: "Adaptive SDLC is used when the system's requirements and users' needs are not well understood." },
+            { question: "The SDLC is typically divided into how many steps?", options: ["2 to 4", "4 to 6", "6 to 8", "8 to 10"], answer: "6 to 8", topic: "SDLC Basics", explanation: "The SDLC is typically divided into six to eight steps: Planning, Requirements, Design, Build, Document, Test, Deploy, Maintain." },
+            { question: "In predictive SDLC, which phase involves securing approval to develop a new system?", options: ["Analysis", "Project Initiation", "Project Planning", "Implementation"], answer: "Project Initiation", topic: "SDLC Phases", explanation: "Project initiation identifies the problem and secures approval for the new system development." },
+            { question: "Which phase focuses on 'discovering and understanding' the details of the problem?", options: ["Design", "Analysis", "Implementation", "Deployment"], answer: "Analysis", topic: "SDLC Phases", explanation: "Analysis focuses on figuring out exactly what the system must do to support business processes." },
+            { question: "The Design phase focuses on ______ the new system components.", options: ["Testing", "Discovering", "Configuring and structuring", "Programming"], answer: "Configuring and structuring", topic: "SDLC Phases", explanation: "Design uses requirements to develop the program structure and algorithms." },
+            { question: "Implementation includes ______ and testing the system.", options: ["Gathering", "Planning", "Programming", "Installing"], answer: "Programming", topic: "SDLC Phases", explanation: "Implementation is the phase where actual coding (programming) and unit testing occur." },
+            { question: "Installing and putting the system into operation is part of the ______ phase.", options: ["Implementation", "Deployment", "Support", "Design"], answer: "Deployment", topic: "SDLC Phases", explanation: "Deployment involves installing the system and beginning actual operations." },
+            { question: "Which phase includes activities to upgrade and maintain the system after it has been deployed?", options: ["Deployment", "Implementation", "Support", "Maintenance"], answer: "Support", topic: "SDLC Phases", explanation: "The support phase includes activities needed to upgrade and maintain the system after it is live." },
+            { question: "What provides guidelines for every facet of the system development life cycle?", options: ["A methodology", "A model", "A technique", "A tool"], answer: "A methodology", topic: "Methodology", explanation: "A system development methodology provides comprehensive guidelines for every facet of the SDLC." },
+            { question: "A 'model' in system development is most often a ______ representation.", options: ["Mathematical", "Textual", "Graphical", "Physical"], answer: "Graphical", topic: "Models", explanation: "Most models are graphical representations that employ agreed-upon symbols and conventions (like UML)." },
+            { question: "A Gantt chart is a model used to manage the ______.", options: ["System components", "Data structure", "Development process", "Object interactions"], answer: "Development process", topic: "Models", explanation: "Gantt charts are specifically used for project management to track schedules." },
+            { question: "A 'tool' in system development is defined as ______ support for creating models.", options: ["Human", "Software", "Physical", "Financial"], answer: "Software", topic: "Tools", explanation: "In this context, a tool is software support that helps create models or other project artifacts." },
+            { question: "What is a 'technique' in system development?", options: ["A hardware device", "A software package", "A collection of guidelines", "A project phase"], answer: "A collection of guidelines", topic: "Techniques", explanation: "A technique is a collection of guidelines that helps an analyst complete a specific activity or task." },
+            { question: "Integrated Development Environments (IDEs) include tools like ______.", options: ["Gantt charts", "Stakeholder lists", "Smart editors and debuggers", "Financial analysis models"], answer: "Smart editors and debuggers", topic: "Tools", explanation: "IDEs provide programming support through features like smart editors, context-sensitive help, and debugging tools." },
+            { question: "Predictive approaches were primarily conceived during which era?", options: ["1950s-1960s", "1970s-1990s", "Late 1990s", "2010s"], answer: "1970s-1990s", topic: "SDLC Evolution", explanation: "Predictive approaches are more traditional and were conceived during the 1970s through the 1990s." },
+            { question: "Adaptive approaches evolved with ______ technology in the late 1990s.", options: ["Mainframe", "Object-oriented", "Punch card", "Assembly"], answer: "Object-oriented", topic: "SDLC Evolution", explanation: "Many newer adaptive approaches evolved with object-oriented technology and Web development in the late 90s." }
+        ];
+
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const questionText = document.getElementById('question-text');
+        const topicTag = document.getElementById('topic-tag');
+        const questionNumber = document.getElementById('question-number');
+        const progressBar = document.getElementById('progress-bar');
+        const optionsContainer = document.getElementById('options-container');
+        const explanationContainer = document.getElementById('explanation-container');
+        const explanationText = document.getElementById('explanation-text');
+        const actionArea = document.getElementById('action-area');
+
+        // Shuffle Helper
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initQuiz() {
+            // Shuffle questions and their internal options
+            questions = shuffle([...rawQuestions]).map(q => {
+                const shuffledOptions = shuffle([...q.options]);
+                return { ...q, options: shuffledOptions };
+            });
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            questionText.textContent = q.question;
+            topicTag.textContent = q.topic;
+            questionNumber.textContent = `Question ${currentQuestionIndex + 1}/${questions.length}`;
+            progressBar.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
+            
+            optionsContainer.innerHTML = '';
+            actionArea.classList.add('hidden');
+            explanationContainer.classList.add('hidden');
+
+            q.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full p-4 rounded-xl border-2 border-slate-200 text-left font-medium transition-all hover:bg-slate-50 hover:border-indigo-300 group flex justify-between items-center";
+                btn.innerHTML = `<span>${opt}</span>`;
+                btn.onclick = () => selectOption(opt);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedText) {
+            const q = questions[currentQuestionIndex];
+            const buttons = optionsContainer.getElementsByTagName('button');
+            
+            for (let btn of buttons) {
+                btn.disabled = true;
+                const btnText = btn.querySelector('span').textContent;
+                
+                if (btnText === q.answer) {
+                    btn.classList.add('correct');
+                }
+                if (btnText === selectedText && selectedText !== q.answer) {
+                    btn.classList.add('wrong');
+                }
+            }
+
+            if (selectedText === q.answer) {
+                score++;
+            }
+
+            // Show explanation
+            explanationText.textContent = q.explanation;
+            explanationContainer.classList.remove('hidden');
+            actionArea.classList.remove('hidden');
+        }
+
+        document.getElementById('next-btn').onclick = () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        };
+
+        function showResults() {
+            document.getElementById('quiz-card').classList.add('hidden');
+            document.getElementById('results-card').classList.remove('hidden');
+            const finalScore = document.getElementById('final-score');
+            const percentage = document.getElementById('percentage');
+            
+            finalScore.textContent = `${score} / ${questions.length}`;
+            const perc = Math.round((score / questions.length) * 100);
+            percentage.textContent = `${perc}% Mastery Score`;
+        }
+
+        window.onload = initQuiz;
+    </script>
+</body>
+</html>
+
