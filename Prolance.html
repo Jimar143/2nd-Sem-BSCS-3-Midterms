@@ -11,6 +11,8 @@
         .option-btn:disabled { cursor: not-allowed; }
         .correct { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #166534 !important; }
         .wrong { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
+        .explanation-box { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col items-center py-10 px-4">
@@ -39,16 +41,22 @@
             <h2 id="question-text" class="text-xl font-bold text-slate-800 mb-8 leading-tight">Loading question...</h2>
 
             <!-- Options -->
-            <div id="options-container" class="grid grid-cols-1 gap-3 mb-8">
+            <div id="options-container" class="grid grid-cols-1 gap-3 mb-6">
                 <!-- Options will be injected here -->
+            </div>
+
+            <!-- Explanation Area -->
+            <div id="explanation-container" class="hidden mb-6 p-4 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg explanation-box">
+                <p class="text-sm font-bold text-amber-800 mb-1">Bakit ito ang sagot?</p>
+                <p id="explanation-text" class="text-sm text-amber-900 leading-relaxed"></p>
             </div>
 
             <!-- Action Area -->
             <div id="action-area" class="hidden flex justify-end">
                 <button id="next-btn" class="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 flex items-center gap-2">
-                    Next Question 
+                    Next Question
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="Details 10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
                 </button>
             </div>
@@ -64,106 +72,150 @@
                 </svg>
             </div>
         </div>
-        <h2 class="text-3xl font-black text-slate-800 mb-2">Quiz Finished!</h2>
-        <p class="text-slate-500 mb-8">Great job reviewing for your exam.</p>
+        <h2 class="text-3xl font-black text-slate-800 mb-2">Tapos na ang Quiz!</h2>
+        <p class="text-slate-500 mb-8">Magaling! Handa ka na para sa iyong exam.</p>
         
         <div class="text-6xl font-black text-indigo-600 mb-2" id="final-score">0 / 32</div>
         <div class="text-sm text-slate-400 mb-10" id="percentage">0%</div>
 
         <button onclick="location.reload()" class="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all flex items-center justify-center gap-2">
-            Restart Quiz
+            Retake ang Quiz
         </button>
     </div>
 
     <script>
-        const questions = [
-            { question: "What is the primary goal of Lexical Analysis?", options: ["Check program logic", "Break source code into tokens", "Execute machine code", "Create a GUI"], answer: 1, topic: "Lexical Analysis" },
-            { question: "These are logical groupings of characters collected by the lexical analyzer.", options: ["Tokens", "Grammars", "Lexemes", "Contexts"], answer: 2, topic: "Lexical Analysis" },
-            { question: "Which automaton is used by a lexical analyzer to recognize tokens?", options: ["NFA", "PDA", "Turing Machine", "DFA"], answer: 3, topic: "Lexical Analysis" },
-            { question: "Tokens can be described using ______ in programming languages.", options: ["Regular expressions", "Context-free grammars", "Flowcharts", "Truth tables"], answer: 0, topic: "Lexical Analysis" },
-            { question: "Which process involves cleaning up input text and removing comments?", options: ["Output Generation", "Input Preprocessing", "Token Classification", "Tokenization"], answer: 1, topic: "Lexical Analysis" },
-            { question: "In the code 'result = oldsum', which lexeme represents the identifier?", options: ["=", ";", "result", "oldsum"], answer: 2, topic: "Lexical Analysis" },
-            { question: "What are considered 'Non-tokens'?", options: ["Keywords", "Operators", "Comments and blanks", "Variables"], answer: 2, topic: "Lexical Analysis" },
-            { question: "Which phase comes after Lexical Analysis?", options: ["Code Optimization", "Syntax Analysis", "Semantic Analysis", "Target Code Gen"], answer: 1, topic: "Syntax Analysis" },
-            { question: "Syntax analysis is also known as ______.", options: ["Scanning", "Parsing", "Linking", "Loading"], answer: 1, topic: "Syntax Analysis" },
-            { question: "What is the hierarchical representation of a program's structure produced by the parser?", options: ["Lexeme List", "Token Stream", "Abstract Syntax Tree (AST)", "Symbol Table"], answer: 2, topic: "Syntax Analysis" },
-            { question: "Syntax analysis uses ______ to define the rules of the language.", options: ["DFA", "Regular Expressions", "Context-Free Grammar (CFG)", "Finite Automata"], answer: 2, topic: "Syntax Analysis" },
-            { question: "The process of applying CFG rules to generate a valid sequence of tokens is called ______.", options: ["Derivation", "Integration", "Reduction", "Abstraction"], answer: 0, topic: "Syntax Analysis" },
-            { question: "A grammar is ______ if it has more than one parse tree for at least one string.", options: ["Recursive", "Ambiguous", "Dynamic", "Complex"], answer: 1, topic: "Syntax Analysis" },
-            { question: "In a parse tree, interior nodes represent ______.", options: ["Terminals", "Operators", "Non-terminals", "Leaf nodes"], answer: 2, topic: "Syntax Analysis" },
-            { question: "Which property decides which side an operator takes an operand if operators are on both sides?", options: ["Precedence", "Ambiguity", "Associativity", "Shadowing"], answer: 2, topic: "Syntax Analysis" },
-            { question: "What is the highest priority operator in Python?", options: ["Multiplication", "Binary +", "Exponentiation (**)", "Unary +"], answer: 2, topic: "Syntax Analysis" },
-            { question: "The term 'identifier' can be used interchangeably with ______.", options: ["Variable", "Name", "Symbol", "Token"], answer: 1, topic: "Names" },
-            { question: "Which naming convention is used in 'myFirstCode'?", options: ["Snake case", "Pascal case", "Camel case", "Kebab case"], answer: 2, topic: "Names" },
-            { question: "In PHP, variable names must begin with which sign?", options: ["@", "%", "&", "$"], answer: 3, topic: "Names" },
-            { question: "In 'snake_case', words are separated by ______.", options: ["Hyphens", "Capital letters", "Underscores", "Spaces"], answer: 2, topic: "Names" },
-            { question: "A special word that cannot be used as a name is called a ______.", options: ["Keyword", "Reserved word", "Literal", "Abstract word"], answer: 1, topic: "Names" },
-            { question: "Variables are characterized as a ______ of attributes (Name, Address, Type, Value, Lifetime, Scope).", options: ["Quadruple", "Quintuple", "Sextuple", "Septuple"], answer: 2, topic: "Variables" },
-            { question: "A variable's value is also called its ______.", options: ["l-value", "r-value", "Pointer", "Binding"], answer: 1, topic: "Variables" },
-            { question: "The address of a variable is also referred to as its ______.", options: ["l-value", "r-value", "Reference", "Scope"], answer: 0, topic: "Variables" },
-            { question: "The time an association between an attribute and entity takes place is called ______.", options: ["Run time", "Binding time", "Load time", "Compile time"], answer: 1, topic: "Bindings" },
-            { question: "In Java, a variable is bound to a type at ______.", options: ["Language design time", "Compile time", "Run time", "Language implementation time"], answer: 1, topic: "Bindings" },
-            { question: "A declaration that lists variable names and specifies their type directly is ______.", options: ["Implicit", "Static", "Explicit", "Dynamic"], answer: 2, topic: "Bindings" },
-            { question: "Python variables are ______ typed.", options: ["Statically", "Implicitly", "Explicitly", "Dynamically"], answer: 3, topic: "Bindings" },
-            { question: "What is the range of statements where a variable is visible?", options: ["Lifetime", "Scope", "Binding", "Address"], answer: 1, topic: "Scopes" },
-            { question: "What does the 'E' in Python's LEGB rule stand for?", options: ["External", "Environment", "Enclosing", "Explicit"], answer: 2, topic: "Scopes" },
-            { question: "When a local variable has the same name as a global variable, the local variable ______ the global one.", options: ["Deletes", "Shadows", "Renames", "Links"], answer: 1, topic: "Scopes" },
-            { question: "Which keyword in Python is used to modify a variable declared outside a function?", options: ["static", "public", "global", "extern"], answer: 2, topic: "Scopes" }
+        const rawQuestions = [
+            { question: "What is the primary goal of Lexical Analysis?", options: ["Check program logic", "Break source code into tokens", "Execute machine code", "Create a GUI"], answer: "Break source code into tokens", topic: "Lexical Analysis", explanation: "Ang Lexical Analysis ang unang phase kung saan binabasa ang characters at ginagawang 'tokens' gaya ng keywords o identifiers." },
+            { question: "These are logical groupings of characters collected by the lexical analyzer.", options: ["Tokens", "Grammars", "Lexemes", "Contexts"], answer: "Lexemes", topic: "Lexical Analysis", explanation: "Ang lexemes ay ang actual strings (halimbawa, 'int' o 'x') na binabasa bago sila i-classify bilang tokens." },
+            { question: "Which automaton is used by a lexical analyzer to recognize tokens?", options: ["NFA", "PDA", "Turing Machine", "DFA"], answer: "DFA", topic: "Lexical Analysis", explanation: "DFA o Deterministic Finite Automata ang ginagamit dahil mabilis at efficient ito sa pagkilala ng patterns (Regular Expressions)." },
+            { question: "Tokens can be described using ______ in programming languages.", options: ["Regular expressions", "Context-free grammars", "Flowcharts", "Truth tables"], answer: "Regular expressions", topic: "Lexical Analysis", explanation: "Regular expressions ang standard mathematical way para i-define ang structure ng tokens." },
+            { question: "Which process involves cleaning up input text and removing comments?", options: ["Output Generation", "Input Preprocessing", "Token Classification", "Tokenization"], answer: "Input Preprocessing", topic: "Lexical Analysis", explanation: "Sa preprocessing tinatanggal ang mga bagay na hindi kailangan ng logic gaya ng comments at extra whitespaces." },
+            { question: "In the code 'result = oldsum', which lexeme represents the identifier?", options: ["=", ";", "result", "oldsum"], answer: "result", topic: "Lexical Analysis", explanation: "Ang 'result' at 'oldsum' ay parehong identifiers. Pinili dito ang 'result' bilang sagot." },
+            { question: "What are considered 'Non-tokens'?", options: ["Keywords", "Operators", "Comments and blanks", "Variables"], answer: "Comments and blanks", topic: "Lexical Analysis", explanation: "Ang mga comments at blanks ay 'non-tokens' dahil binabalewala sila ng compiler pagkatapos ng scanning phase." },
+            { question: "Which phase comes after Lexical Analysis?", options: ["Code Optimization", "Syntax Analysis", "Semantic Analysis", "Target Code Gen"], answer: "Syntax Analysis", topic: "Syntax Analysis", explanation: "Pagkatapos makuha ang tokens (Lexical), iche-check naman ang grammar o structure ng code (Syntax)." },
+            { question: "Syntax analysis is also known as ______.", options: ["Scanning", "Parsing", "Linking", "Loading"], answer: "Parsing", topic: "Syntax Analysis", explanation: "Ang parsing ay ang proseso ng pag-aanalyze ng tokens base sa rules ng grammar." },
+            { question: "What is the hierarchical representation of a program's structure produced by the parser?", options: ["Lexeme List", "Token Stream", "Abstract Syntax Tree (AST)", "Symbol Table"], answer: "Abstract Syntax Tree (AST)", topic: "Syntax Analysis", explanation: "Ang AST ay nagpapakita ng structure ng code sa anyong 'tree' para mas madaling ma-analyze ng compiler." },
+            { question: "Syntax analysis uses ______ to define the rules of the language.", options: ["DFA", "Regular Expressions", "Context-Free Grammar (CFG)", "Finite Automata"], answer: "Context-Free Grammar (CFG)", topic: "Syntax Analysis", explanation: "Mas powerful ang CFG kaysa sa Regular Expressions kaya ito ang ginagamit para sa syntax rules." },
+            { question: "The process of applying CFG rules to generate a valid sequence of tokens is called ______.", options: ["Derivation", "Integration", "Reduction", "Abstraction"], answer: "Derivation", topic: "Syntax Analysis", explanation: "Derivation ang tawag sa pag-apply ng rules para makabuo ng tamang sentence o code sequence." },
+            { question: "A grammar is ______ if it has more than one parse tree for at least one string.", options: ["Recursive", "Ambiguous", "Dynamic", "Complex"], answer: "Ambiguous", topic: "Syntax Analysis", explanation: "Ang 'Ambiguity' ay nakakalito sa compiler dahil dalawa ang pwedeng maging interpretasyon sa iisang code." },
+            { question: "In a parse tree, interior nodes represent ______.", options: ["Terminals", "Operators", "Non-terminals", "Leaf nodes"], answer: "Non-terminals", topic: "Syntax Analysis", explanation: "Ang non-terminals ay ang mga rules/categories sa loob ng tree, habang ang leaves ay ang actual tokens (terminals)." },
+            { question: "Which property decides which side an operator takes an operand if operators are on both sides?", options: ["Precedence", "Ambiguity", "Associativity", "Shadowing"], answer: "Associativity", topic: "Syntax Analysis", explanation: "Associativity ang nagdidikta kung left-to-right o right-to-left ang pagkalkula kapag pareho ang precedence." },
+            { question: "What is the highest priority operator in Python?", options: ["Multiplication", "Binary +", "Exponentiation (**)", "Unary +"], answer: "Exponentiation (**)", topic: "Syntax Analysis", explanation: "Ang exponentiation (**) ang pinakamataas ang priority sa Python math operations." },
+            { question: "The term 'identifier' can be used interchangeably with ______.", options: ["Variable", "Name", "Symbol", "Token"], answer: "Name", topic: "Names", explanation: "Sa programming language theory, ang identifier ay ang technically na string na tumutukoy sa isang 'Name'." },
+            { question: "Which naming convention is used in 'myFirstCode'?", options: ["Snake case", "Pascal case", "Camel case", "Kebab case"], answer: "Camel case", topic: "Names", explanation: "Camel case ay nagsisimula sa maliit na letter at malaki ang simula ng bawat kasunod na salita." },
+            { question: "In PHP, variable names must begin with which sign?", options: ["@", "%", "&", "$"], answer: "$", topic: "Names", explanation: "Kailangang may '$' sign sa simula ng bawat variable sa PHP." },
+            { question: "In 'snake_case', words are separated by ______.", options: ["Hyphens", "Capital letters", "Underscores", "Spaces"], answer: "Underscores", topic: "Names", explanation: "Snake case uses underscores (halimbawa: ang_aking_variable)." },
+            { question: "A special word that cannot be used as a name is called a ______.", options: ["Keyword", "Reserved word", "Literal", "Abstract word"], answer: "Reserved word", topic: "Names", explanation: "Kapag ang isang keyword ay bawal gamitin bilang identifier, ito ay tinatawag na Reserved Word." },
+            { question: "Variables are characterized as a ______ of attributes (Name, Address, Type, Value, Lifetime, Scope).", options: ["Quadruple", "Quintuple", "Sextuple", "Septuple"], answer: "Sextuple", topic: "Variables", explanation: "May anim (sextuple) na katangian ang bawat variable." },
+            { question: "A variable's value is also called its ______.", options: ["l-value", "r-value", "Pointer", "Binding"], answer: "r-value", topic: "Variables", explanation: "R-value (Right side) ang tawag sa value, habang L-value (Left side) ang tawag sa address." },
+            { question: "The address of a variable is also referred to as its ______.", options: ["l-value", "r-value", "Reference", "Scope"], answer: "l-value", topic: "Variables", explanation: "L-value (Left value) ang tumutukoy sa memory location o address ng variable." },
+            { question: "The time an association between an attribute and entity takes place is called ______.", options: ["Run time", "Binding time", "Load time", "Compile time"], answer: "Binding time", topic: "Bindings", explanation: "Binding time ang tawag sa oras kung kailan ikinakabit ang isang attribute sa isang entity." },
+            { question: "In Java, a variable is bound to a type at ______.", options: ["Language design time", "Compile time", "Run time", "Language implementation time"], answer: "Compile time", topic: "Bindings", explanation: "Ang Java ay Statically Typed, kaya alam na ang type ng variable habang nagko-compile pa lang." },
+            { question: "A declaration that lists variable names and specifies their type directly is ______.", options: ["Implicit", "Static", "Explicit", "Dynamic"], answer: "Explicit", topic: "Bindings", explanation: "Explicit declaration kapag direkta mong sinulat ang type, gaya ng 'int x;'." },
+            { question: "Python variables are ______ typed.", options: ["Statically", "Implicitly", "Explicitly", "Dynamically"], answer: "Dynamically", topic: "Bindings", explanation: "Dynamically typed ang Python dahil ang type ay nalalaman lang habang tumatakbo ang program (Run time)." },
+            { question: "What is the range of statements where a variable is visible?", options: ["Lifetime", "Scope", "Binding", "Address"], answer: "Scope", topic: "Scopes", explanation: "Scope ang tawag sa area kung saan 'visible' o pwedeng gamitin ang isang variable." },
+            { question: "What does the 'E' in Python's LEGB rule stand for?", options: ["External", "Environment", "Enclosing", "Explicit"], answer: "Enclosing", topic: "Scopes", explanation: "LEGB: Local, Enclosing (non-local), Global, at Built-in." },
+            { question: "When a local variable has the same name as a global variable, the local variable ______ the global one.", options: ["Deletes", "Shadows", "Renames", "Links"], answer: "Shadows", topic: "Scopes", explanation: "Shadowing (o masking) ang tawag kapag natatakpan ng inner variable ang outer variable na pareho ang pangalan." },
+            { question: "Which keyword in Python is used to modify a variable declared outside a function?", options: ["static", "public", "global", "extern"], answer: "global", topic: "Scopes", explanation: "Ginagamit ang 'global' keyword para sabihin sa Python na ang gagamitin mong variable ay yung nasa labas ng function." }
         ];
 
+        let questions = [];
         let currentQuestionIndex = 0;
         let score = 0;
 
-        const quizCard = document.getElementById('quiz-card');
-        const resultsCard = document.getElementById('results-card');
-        const questionText = document.getElementById('question-text');
-        const optionsContainer = document.getElementById('options-container');
-        const questionNumber = document.getElementById('question-number');
-        const topicTag = document.getElementById('topic-tag');
-        const progressBar = document.getElementById('progress-bar');
-        const actionArea = document.getElementById('action-area');
-        const nextBtn = document.getElementById('next-btn');
+        // Shuffle Function
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Initialize Quiz
+        function initQuiz() {
+            try {
+                // Shuffle ang listahan ng questions
+                questions = shuffleArray([...rawQuestions]).map(q => {
+                    // Shuffle din ang options sa bawat question
+                    return {
+                        ...q,
+                        shuffledOptions: shuffleArray([...q.options])
+                    };
+                });
+                
+                currentQuestionIndex = 0;
+                score = 0;
+                loadQuestion();
+            } catch (err) {
+                console.error("Initialization Error:", err);
+                document.getElementById('question-text').textContent = "Error loading quiz. Please refresh.";
+            }
+        }
 
         function loadQuestion() {
             const q = questions[currentQuestionIndex];
+            
+            // DOM Elements
+            const questionText = document.getElementById('question-text');
+            const topicTag = document.getElementById('topic-tag');
+            const questionNumber = document.getElementById('question-number');
+            const progressBar = document.getElementById('progress-bar');
+            const optionsContainer = document.getElementById('options-container');
+            const explanationContainer = document.getElementById('explanation-container');
+            const actionArea = document.getElementById('action-area');
+
+            // Set content
             questionText.textContent = q.question;
             topicTag.textContent = q.topic;
-            questionNumber.textContent = `Question ${currentQuestionIndex + 1}/${questions.length}`;
+            questionNumber.textContent = `Tanong ${currentQuestionIndex + 1}/${questions.length}`;
             progressBar.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
             
+            // Reset UI
             optionsContainer.innerHTML = '';
+            explanationContainer.classList.add('hidden');
             actionArea.classList.add('hidden');
 
-            q.options.forEach((opt, index) => {
+            // Create buttons
+            q.shuffledOptions.forEach((opt) => {
                 const btn = document.createElement('button');
-                btn.className = "option-btn w-full p-4 rounded-xl border-2 border-slate-200 text-left font-medium transition-all hover:bg-slate-50 hover:border-indigo-300 group flex justify-between items-center";
+                btn.className = "option-btn w-full p-4 rounded-xl border-2 border-slate-200 text-left font-medium transition-all hover:bg-slate-50 hover:border-indigo-300 flex justify-between items-center";
                 btn.innerHTML = `<span>${opt}</span>`;
-                btn.onclick = () => selectOption(index);
+                btn.onclick = () => selectOption(opt, btn);
                 optionsContainer.appendChild(btn);
             });
         }
 
-        function selectOption(index) {
+        function selectOption(selectedText, selectedBtn) {
             const q = questions[currentQuestionIndex];
-            const buttons = optionsContainer.getElementsByTagName('button');
-            
-            // Disable all buttons
-            for (let btn of buttons) {
+            const buttons = document.querySelectorAll('.option-btn');
+            const explanationContainer = document.getElementById('explanation-container');
+            const explanationText = document.getElementById('explanation-text');
+            const actionArea = document.getElementById('action-area');
+
+            // Disable all buttons and show colors
+            buttons.forEach(btn => {
                 btn.disabled = true;
-            }
+                const btnText = btn.querySelector('span').textContent;
+                
+                if (btnText === q.answer) {
+                    btn.classList.add('correct');
+                } else if (btn === selectedBtn && selectedText !== q.answer) {
+                    btn.classList.add('wrong');
+                }
+            });
 
-            if (index === q.answer) {
-                buttons[index].classList.add('correct');
+            if (selectedText === q.answer) {
                 score++;
-            } else {
-                buttons[index].classList.add('wrong');
-                buttons[q.answer].classList.add('correct');
             }
 
+            // Show explanation
+            explanationText.textContent = q.explanation;
+            explanationContainer.classList.remove('hidden');
             actionArea.classList.remove('hidden');
         }
 
-        nextBtn.onclick = () => {
+        document.getElementById('next-btn').onclick = () => {
             currentQuestionIndex++;
             if (currentQuestionIndex < questions.length) {
                 loadQuestion();
@@ -173,8 +225,10 @@
         };
 
         function showResults() {
-            quizCard.classList.add('hidden');
+            document.getElementById('quiz-card').classList.add('hidden');
+            const resultsCard = document.getElementById('results-card');
             resultsCard.classList.remove('hidden');
+            
             const finalScore = document.getElementById('final-score');
             const percentage = document.getElementById('percentage');
             
@@ -183,8 +237,13 @@
             percentage.textContent = `${perc}% Completion Score`;
         }
 
-        // Start
-        window.onload = loadQuestion;
+        // Siguraduhin na ang DOM ay handa na bago simulan ang quiz
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initQuiz);
+        } else {
+            initQuiz();
+        }
     </script>
 </body>
 </html>
+
